@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.TexturePaint;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -32,8 +33,8 @@ import javax.swing.SwingUtilities;
 
 public class TileButtons extends JFrame implements ActionListener, MouseListener
 {
-	private final int SCREEN_WIDTH = 1600;
-	private final int SCREEN_HEIGHT = 800;
+	private final int SCREEN_WIDTH = 1200;
+	private final int SCREEN_HEIGHT = 650;
 	private DrawPanel drwpnl;
 	private JButton[] objectButtons;
 	private JPanel buttonPanel, mainPanel;
@@ -53,6 +54,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	public TileButtons(int numTileRows, int numTileCols, int numOfTextures, String texturePath,
 			int textSheetRows, int textSheetCols, int textWidth, int textHeight)
 	{
+		
 		if(numOfTextures % 2 == 0)
 		{
 			bColNum = 2;
@@ -177,27 +179,11 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 		}
 	}
 
-	//Mouse has some weird shit that happens with it because the mouse is offset by 9 pixels 
-	//on the X and 36 pixels on the y
+	
 	@Override
 	public void mouseClicked(MouseEvent evt) 
 	{
-		mouseX = evt.getX() - mouseOffsetX;
-		mouseY = evt.getY() - mouseOffSetY;
 		
-		lastTilePressed = drwpnl.CheckTiles(mouseX,  mouseY, evt.getButton());
-		
-		if(lastTilePressed.x != -1 && lastTilePressed.y != -1)
-		{
-			if(evt.getButton() == MouseEvent.BUTTON3)
-			{
-				tileMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-				
-			}
-			repaint();
-		}
-		
-		//System.out.println("Mouse Pressed at: " + mouseX + ", " + mouseY);
 	}
 
 	@Override
@@ -211,12 +197,31 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	{
 		
 	}
-
+	
+	//Mouse has some weird shit that happens with it because the mouse is offset by 9 pixels 
+	//on the X and 36 pixels on the y
 	@Override
-	public void mousePressed(MouseEvent evt) 
+	public void mousePressed(MouseEvent evt)
 	{
+		mouseX = evt.getX() - mouseOffsetX;
+		mouseY = evt.getY() - mouseOffSetY;
+		
+		lastTilePressed = drwpnl.CheckTiles(mouseX,  mouseY, evt.getButton());
+		
+		if(lastTilePressed.x != -1 && lastTilePressed.y != -1)
+		{
+			if(evt.getButton() == MouseEvent.BUTTON3)
+			{
+				System.out.println("got in the if statment");
+				tileMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				
+			}
+			repaint();
+		}
+		
+		//System.out.println("Mouse Pressed at: " + mouseX + ", " + mouseY);
 	}
-
+	
 	@Override
 	public void mouseReleased(MouseEvent e) 
 	{

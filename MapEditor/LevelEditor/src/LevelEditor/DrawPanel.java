@@ -8,6 +8,7 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
@@ -72,14 +74,13 @@ class DrawPanel extends JPanel
         fileName = filePath;
            
         setLayout(new FlowLayout());
-        setPreferredSize(new Dimension((int)(screenWidth * 0.75), screenHeight));
+        setPreferredSize(new Dimension((int)(screenWidth * 0.75), (int)screenHeight));
         
         try 
         {
 			bigImg = ImageIO.read(this.getClass().getResource("/Images/" + fileName));
 			defaultImg = ImageIO.read(this.getClass().getResource("/Images/exitButton.png"));
 			lineImg = ImageIO.read(this.getClass().getResource("/Images/open.png"));
-		
 		} 
         catch (IOException e) 
 		{
@@ -109,11 +110,11 @@ class DrawPanel extends JPanel
     	{
     		for (int j = 0; j < textCols; j++)
     		{
+    			System.out.println(j * textWidth + ". " + i * textHeight + ". " + textWidth + ". " + textHeight);
     			sprites[(i * textCols) + j] = 
     					bigImg.getSubimage(j * textWidth, i * textHeight, textWidth, textHeight);
     		}
     	}
-    	
     }
     
 	private void CreateTexturePaints() 
@@ -265,9 +266,11 @@ class DrawPanel extends JPanel
     	{
     		for (int j = 0; j< tileCol; j++)
     		{
-    			w.print(tiles[i][j].GetTileNum() + " ");
+    			Tile temp = tiles[i][j];
+    			if(temp.GetTileNum() != -999)
+    				w.print(temp.GetTileNum() + "," + i + "," + j + "||");
     		}
-    		w.println();
+    		//w.println();
     	}
     }
     
