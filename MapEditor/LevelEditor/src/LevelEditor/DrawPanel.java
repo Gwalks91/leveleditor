@@ -78,9 +78,10 @@ class DrawPanel extends JPanel
         
         try 
         {
-			bigImg = ImageIO.read(this.getClass().getResource("/Images/" + fileName));
-			defaultImg = ImageIO.read(this.getClass().getResource("/Images/exitButton.png"));
-			lineImg = ImageIO.read(this.getClass().getResource("/Images/open.png"));
+        	//System.out.println(this.getClass().getResource(this.getClass()));
+			bigImg = ImageIO.read(this.getClass().getResource("./Images/" + fileName));
+			defaultImg = ImageIO.read(this.getClass().getResource("./Images/exitButton.png"));
+			lineImg = ImageIO.read(this.getClass().getResource("./Images/open.png"));
 		} 
         catch (IOException e) 
 		{

@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +24,7 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -40,6 +42,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	private JPanel buttonPanel, mainPanel;
 	private MenuBar menu;
 	private JPopupMenu tileMenu;
+	private JFileChooser fc;
 	
 	GridLayout buttonLayout;
 	
@@ -71,7 +74,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 		mainPanel = new JPanel(new BorderLayout());
 		objectButtons = new JButton[bColNum * bRowNum];
 		menu = new MenuBar();
-		
+		fc = new JFileChooser();
 		drwpnl = new DrawPanel(numTileRows, numTileCols, SCREEN_WIDTH, SCREEN_HEIGHT, 
 				texturePath, textSheetRows, textSheetCols, textWidth, textHeight);
 		
@@ -272,6 +275,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
+				//Bring up file window.
 				/*
 				BufferedReader reader = new BufferedReader(new FileReader("/path/to/file.txt"));
 				String line = null;
@@ -279,6 +283,13 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 				    // ...
 				}
 				*/
+				int returnVal = fc.showSaveDialog(mainPanel);
+				
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					//String[] fileName = file.getName().
+					
+				}
 			}
 		});
 	}
