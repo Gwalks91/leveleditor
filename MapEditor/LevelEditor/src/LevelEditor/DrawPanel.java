@@ -58,7 +58,7 @@ class DrawPanel extends JPanel
 	private String fileName;
 
     public DrawPanel(int tileRow, int tileCol, int screenWidth, int screenHeight, 
-    		String filePath, int textureRows, int textureCols, int tWidth, int tHeight) 
+    		String filePath, int textureRows, int textureCols, int tWidth, int tHeight, String[] tilePlaces, int filledTiles) 
     {
     	this.tileRow = tileRow;
     	this.tileCol = tileCol;
@@ -79,9 +79,9 @@ class DrawPanel extends JPanel
         
         try 
         {
-			bigImg = ImageIO.read(this.getClass().getResource("/Images/" + fileName + ".png"));
-			defaultImg = ImageIO.read(this.getClass().getResource("/Images/exitButton.png"));
-			lineImg = ImageIO.read(this.getClass().getResource("/Images/open.png"));
+			bigImg = ImageIO.read(this.getClass().getResource("./Images/" + fileName + ".png"));
+			defaultImg = ImageIO.read(this.getClass().getResource("./Images/exitButton.png"));
+			lineImg = ImageIO.read(this.getClass().getResource("./Images/open.png"));
 		} 
         catch (IOException e) 
 		{
@@ -102,11 +102,12 @@ class DrawPanel extends JPanel
         CreateTexturePaints();
         
         currentPaint = textureList[0];
-        
         CreateTiles();
+        if (tilePlaces != null)
+        	FillTiles(tilePlaces);
     }
 
-    private void loadImages() 
+	private void loadImages() 
     {
     	for (int i = 0; i < textRows; i++)
     	{
@@ -233,6 +234,15 @@ class DrawPanel extends JPanel
         }
         
     }
+    
+    private void FillTiles(String[] tilePlaces) {
+        for (String s : tilePlaces) {
+        	String[] line = s.split(",");
+        	SetTexture(Integer.parseInt(line[0]));
+        	ChangeTile(Integer.parseInt(line[1]),Integer.parseInt(line[2]));
+        }
+        SetTexture(0);
+	}
     
     private void DrawGridLines(Graphics2D g)
     {

@@ -13,10 +13,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -46,6 +50,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	
 	GridLayout buttonLayout;
 	
+	private String loadedLevelName;
 	private int bColNum;
 	private int bRowNum;
 	private int mouseX;
@@ -57,7 +62,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	public TileButtons(int numTileRows, int numTileCols, int numOfTextures, String texturePath,
 			int textSheetRows, int textSheetCols, int textWidth, int textHeight)
 	{
-		
+		loadedLevelName = null;
 		if(numOfTextures % 2 == 0)
 		{
 			bColNum = 2;
@@ -76,7 +81,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 		menu = new MenuBar();
 		fc = new JFileChooser();
 		drwpnl = new DrawPanel(numTileRows, numTileCols, SCREEN_WIDTH, SCREEN_HEIGHT, 
-				texturePath, textSheetRows, textSheetCols, textWidth, textHeight);
+				texturePath, textSheetRows, textSheetCols, textWidth, textHeight, null, 0);
 		
 		initUI();
 	}
@@ -127,7 +132,10 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 		tileMenu.add(setStart);
 		tileMenu.add(setEnd);
 		
-		setTitle("Two Buttons");
+		if (loadedLevelName == null)
+			setTitle("New Level");
+		else
+			setTitle(loadedLevelName);
 		setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -239,6 +247,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 			public void actionPerformed(ActionEvent event) 
 			{
 				drwpnl.ResetTiles();
+				revalidate();
 				repaint();
 			}
 		});
@@ -250,10 +259,19 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 			@Override
 			public void actionPerformed(ActionEvent event) 
 			{
+				String fileName = null;
+				if (loadedLevelName == null) {
+					SavePanel sp = new SavePanel();
+					System.out.println(sp.GetAnswer());
+					fileName = sp.GetAnswer();
+				}
+				else {
+					fileName = loadedLevelName;
+				}
 				PrintWriter writer;
 				try 
 				{
-					writer = new PrintWriter("Level.txt", "UTF-8");
+					writer = new PrintWriter(fileName + ".txt", "UTF-8");
 					drwpnl.PrintTileNumbers(writer);
 					writer.close();
 				} 
@@ -266,6 +284,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 					e.printStackTrace();
 				}
 				
+				ConfirmPanel cp = new ConfirmPanel("File is saved!", mainPanel);
 			}
 		});
 		
@@ -283,12 +302,77 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 				    // ...
 				}
 				*/
-				int returnVal = fc.showSaveDialog(mainPanel);
+				int returnVal = fc.showOpenDialog(mainPanel);
 				
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-					//String[] fileName = file.getName().
+					System.out.println(file.getName());
+					String[] fileName = file.getName().split("\\.");
 					
+					if (fileName[1].equals("txt")) {
+						FileReader fr;
+						BufferedReader br;
+						try {
+							fr = new FileReader(file);
+							br = new BufferedReader(fr);
+							
+							//Will the file always be 2 lines??
+							String currentLine = br.readLine();
+							ArrayList<String> listOfStrings = new ArrayList<String>();
+							
+							while (currentLine != null) {
+								listOfStrings.add(currentLine);
+								System.out.println(currentLine);
+								currentLine = br.readLine();
+							}
+							
+							String[] firstLine = listOfStrings.get(0).split(",\\s");
+							String[] tilePlaces = listOfStrings.get(1).split("\\|\\|");
+							
+							mainPanel.removeAll();
+							int numOfTextures = 22;
+							
+							if (numOfTextures % 2 == 0) {
+								bColNum = 2;
+								bRowNum = numOfTextures / 2;
+								isOdd = false;
+							} else {
+								bColNum = 2;
+								bRowNum = (numOfTextures / 2) + 1;
+								isOdd = true;
+							}
+							menu = new MenuBar();
+							objectButtons = new JButton[bColNum * bRowNum];
+							fc = new JFileChooser();
+							drwpnl = new DrawPanel(Integer.parseInt(firstLine[0]), Integer.parseInt(firstLine[1]), SCREEN_WIDTH,
+									SCREEN_HEIGHT, firstLine[3], 5, 5, 100, 100, tilePlaces, Integer.parseInt(firstLine[2]));
+							initUI();
+							
+							menu.revalidate();
+							menu.repaint();
+							mainPanel.revalidate();
+							mainPanel.repaint();
+							drwpnl.revalidate();
+							drwpnl.repaint();
+							
+							loadedLevelName = fileName[0];
+							setTitle(loadedLevelName);
+							
+							br.close();
+							fr.close();
+						} catch (FileNotFoundException e) {
+							ConfirmPanel cp = new ConfirmPanel("File not found!", mainPanel);
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+						}
+						
+						//drwpnl = new DrawPanel(20,20,200,200,"2x2Tiles",5,5,100,100);
+						//drwpnl.repaint();
+					}
+					else {
+						ConfirmPanel cp = new ConfirmPanel("File is invalid!", mainPanel);
+					}
 				}
 			}
 		});
