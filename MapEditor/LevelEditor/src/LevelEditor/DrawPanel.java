@@ -48,6 +48,7 @@ class DrawPanel extends JPanel
     int tileWidth;
     int tileHeight;
     int tileCount;
+    int numOfTiles;
     
     int tilePaintNum;
     
@@ -78,7 +79,7 @@ class DrawPanel extends JPanel
         
         try 
         {
-			bigImg = ImageIO.read(this.getClass().getResource("/Images/" + fileName));
+			bigImg = ImageIO.read(this.getClass().getResource("/Images/" + fileName + ".png"));
 			defaultImg = ImageIO.read(this.getClass().getResource("/Images/exitButton.png"));
 			lineImg = ImageIO.read(this.getClass().getResource("/Images/open.png"));
 		} 
@@ -91,6 +92,7 @@ class DrawPanel extends JPanel
         textCols = textureCols;
         textWidth = tWidth;
         textHeight = tHeight;
+        numOfTiles = 0;
         
         sprites = new BufferedImage[textRows * textCols];
         
@@ -193,8 +195,14 @@ class DrawPanel extends JPanel
     
     private void ChangeTile(int row, int col)
     {
-    	tiles[row][col].SetTileTexture(currentPaint);
-    	tiles[row][col].SetTileNumber(tilePaintNum);
+    	Tile t = tiles[row][col];
+    	t.SetTileTexture(currentPaint);
+    	if (t.GetTileNum() == -999)
+    	{
+    		numOfTiles++;
+    		System.out.println("New Tile");
+    	}
+    	t.SetTileNumber(tilePaintNum);
     }
     
     public void ChangeToStart(Point p)
@@ -260,15 +268,16 @@ class DrawPanel extends JPanel
     
     public void PrintTileNumbers(PrintWriter w)
     {
-    	w.println(tileRow + ", " + tileCol + ", " + textWidth 
-    			+ ", " + textHeight + ", " + textRows + ", " + textCols + ", " +fileName);
+    	w.println(tileRow + ", " + tileCol + ", " + numOfTiles + ", " + fileName);
     	for (int i = 0; i < tileRow; i++)
     	{
     		for (int j = 0; j< tileCol; j++)
     		{
     			Tile temp = tiles[i][j];
     			if(temp.GetTileNum() != -999)
+    			{
     				w.print(temp.GetTileNum() + "," + i + "," + j + "||");
+    			}
     		}
     		//w.println();
     	}
