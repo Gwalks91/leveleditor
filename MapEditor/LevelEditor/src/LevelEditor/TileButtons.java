@@ -50,6 +50,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	
 	GridLayout buttonLayout;
 	
+	private File loadedFile;
 	private String loadedLevelName;
 	private int bColNum;
 	private int bRowNum;
@@ -62,6 +63,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	public TileButtons(int numTileRows, int numTileCols, int numOfTextures, String texturePath,
 			int textSheetRows, int textSheetCols, int textWidth, int textHeight)
 	{
+		loadedFile = null;
 		loadedLevelName = null;
 		if(numOfTextures % 2 == 0)
 		{
@@ -271,7 +273,10 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 				PrintWriter writer;
 				try 
 				{
-					writer = new PrintWriter(fileName + ".txt", "UTF-8");
+					if (loadedFile == null)
+						writer = new PrintWriter(fileName + ".txt", "UTF-8");
+					else
+						writer = new PrintWriter(loadedFile);
 					drwpnl.PrintTileNumbers(writer);
 					writer.close();
 				} 
@@ -356,6 +361,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 							drwpnl.repaint();
 							
 							loadedLevelName = fileName[0];
+							loadedFile = file;
 							setTitle(loadedLevelName);
 							
 							br.close();
