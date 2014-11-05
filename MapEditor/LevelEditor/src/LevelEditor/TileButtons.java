@@ -112,6 +112,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 		tileMenu = new JPopupMenu();
 		JMenuItem setStart = new JMenuItem("Set to Start");
 		JMenuItem setEnd = new JMenuItem("Set to End");
+		JMenuItem insertEnemy = new JMenuItem("Put enemy here");
 		
 		setStart.addActionListener(new ActionListener() 
 		{
@@ -131,8 +132,18 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 			}
 		});
 		
+		insertEnemy.addActionListener(new ActionListener() 
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				drwpnl.ChangeToEnemy(lastTilePressed);
+			}
+		});
+		
 		tileMenu.add(setStart);
 		tileMenu.add(setEnd);
+		tileMenu.add(insertEnemy);
 		
 		if (loadedLevelName == null)
 			setTitle("New Level");

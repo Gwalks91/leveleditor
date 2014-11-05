@@ -216,6 +216,11 @@ class DrawPanel extends JPanel
     	tiles[p.x][p.y].SetTileNumber(-2);
     }
     
+    public void ChangeToEnemy(Point p) 
+    {
+    	tiles[p.x][p.y].SetTileNumber(-3);
+    }
+    
     public void SetTexture(int textureNum)
     {
     	currentPaint = textureList[textureNum];
