@@ -9,7 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
-import javax.swing.plaf.metal.MetalIconFactory;
+//import javax.swing.plaf.metal.MetalIconFactory;
 
 public class SimpleMenuExample extends JFrame
 {

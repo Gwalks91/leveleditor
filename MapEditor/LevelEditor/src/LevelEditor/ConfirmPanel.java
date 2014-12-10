@@ -9,6 +9,10 @@ import javax.swing.JPanel;
 
 public class ConfirmPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String textToShow;
 	private boolean running = true;
 	private Component parent;

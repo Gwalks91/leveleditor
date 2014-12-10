@@ -1,9 +1,9 @@
 package LevelEditor;
 
-import javax.swing.JButton;
+//import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+//import javax.swing.JOptionPane;
+//import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class Question
@@ -11,7 +11,7 @@ public class Question
 	private String questionStr;
 	private JLabel qstionText;
 	private JTextField questionField;
-	private int answer;
+//	private int answer;
 	
 	public Question(String question)
 	{

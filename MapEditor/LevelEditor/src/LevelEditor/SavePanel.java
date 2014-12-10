@@ -6,6 +6,10 @@ import javax.swing.JPanel;
 
 public class SavePanel extends JPanel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Question saveFileNameQuestion;
 	private boolean running = true;
 	

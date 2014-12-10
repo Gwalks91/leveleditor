@@ -1,48 +1,88 @@
 package LevelEditor;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
-import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+//import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+//import java.util.logging.Logger;
+//import java.util.logging.Level;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import javax.imageio.ImageIO;
-import javax.swing.SwingUtilities;
+//import javax.swing.SwingUtilities;
 
-class DrawPanel extends JPanel 
+class DrawPanel extends JPanel implements MouseListener, MouseMotionListener
 {
-	int textRows;
-	int textCols;
-	int textWidth;
-	int textHeight;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private final int TILE_SIZE = 64;
 	
-	BufferedImage bigImg;
-	BufferedImage lineImg;
-	BufferedImage defaultImg;
-    BufferedImage[] sprites;
+	private int textRows;
+	private int textCols;
+	private int textWidth;
+	private int textHeight;
+	
+	private BufferedImage startImg;
+	private BufferedImage enemyImg;
+	private BufferedImage bigImg;
+	private BufferedImage lineImg;
+	private BufferedImage defaultImg;
+	private BufferedImage[] sprites;
     
     TexturePaint[] textureList;
     TexturePaint linePaint; 
     TexturePaint defaultPaint;
+    TexturePaint startTile;
+    TexturePaint endTile;
+    TexturePaint enemyTile;
     
-    int screenHeight;
-    int screenWidth; 
+    int screenHeight = 720;
+    int screenWidth = 1280; 
     int tileRow; 
     int tileCol;
     int tileWidth;
@@ -54,38 +94,86 @@ class DrawPanel extends JPanel
     
     Tile[][] tiles;
     
+    private boolean deleteMode;
+    private File tilesheetFile;
 	private TexturePaint currentPaint;
 	private String fileName;
+	private JPopupMenu tileMenu;
+	private Point lastTilePressed;
+	private Point startTilePoint;
+	private boolean dragOn = false;
+	private TexturePaint savedPaint;
 
     public DrawPanel(int tileRow, int tileCol, int screenWidth, int screenHeight, 
-    		String filePath, int textureRows, int textureCols, int tWidth, int tHeight, String[] tilePlaces, int filledTiles) 
-    {
+    		File file, int textureRows, int textureCols, int tWidth, int tHeight, String[] tilePlaces, int filledTiles) 
+    {	
+    	deleteMode = false;
+    	startTilePoint = null;
+    	tileMenu = new JPopupMenu();
+		JMenuItem setStart = new JMenuItem("Set to Start");
+		JMenuItem insertEnemy = new JMenuItem("Put enemy here");
+		JMenuItem zoom = new JMenuItem("Zoom out");
+		
+		zoom.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+			}
+			
+		});
+		
+		setStart.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				ChangeToStart(lastTilePressed);
+			}
+		});
+		
+		insertEnemy.addActionListener(new ActionListener() 
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ChangeToEnemy(lastTilePressed);
+			}
+		});
+		
+		tileMenu.add(setStart);
+		tileMenu.add(insertEnemy);
+		tileMenu.add(zoom);
+		
     	this.tileRow = tileRow;
     	this.tileCol = tileCol;
-    	this.screenWidth = screenWidth;
-    	this.screenHeight = screenHeight;
     	
     	tileCount = tileRow * tileCol;
     	
-    	tileWidth = (int)((screenWidth * 0.75) / tileCol);
-        tileHeight = (int)(screenHeight / tileRow);
-        
+        tileWidth = TILE_SIZE;
+        tileHeight = TILE_SIZE; 
+    	
         tiles = new Tile[tileRow][tileCol];
         
-        fileName = filePath;
-           
-        setLayout(new FlowLayout());
-        setPreferredSize(new Dimension((int)(screenWidth * 0.75), (int)screenHeight));
+        fileName = file.getName();
+        tilesheetFile = file;
         
+        setLayout(new FlowLayout());
+        setPreferredSize(new Dimension(this.tileWidth * this.tileCol,this.tileHeight * this.tileRow));
+        addMouseListener(this);
+        addMouseMotionListener(this);
         try 
         {
-			bigImg = ImageIO.read(this.getClass().getResource("./Images/" + fileName + ".png"));
-			defaultImg = ImageIO.read(this.getClass().getResource("./Images/exitButton.png"));
-			lineImg = ImageIO.read(this.getClass().getResource("./Images/open.png"));
+        	bigImg = ImageIO.read(tilesheetFile);
+			defaultImg = ImageIO.read(this.getClass().getResource("Images/exitButton.png"));
+			lineImg = ImageIO.read(this.getClass().getResource("Images/open.png"));
+			startImg = ImageIO.read(this.getClass().getResource("Images/startTile.png"));
+			enemyImg = ImageIO.read(this.getClass().getResource("Images/enemyTile.png"));
 		} 
         catch (IOException e) 
 		{
-			System.out.println("File for the sprite sheet not opened!");
+			//System.out.println("File for the sprite sheet not opened!");
+        	ConfirmPanel cp = new ConfirmPanel("File for the sprite sheet not found!", this);
 		}
         
         textRows =  textureRows;
@@ -113,7 +201,6 @@ class DrawPanel extends JPanel
     	{
     		for (int j = 0; j < textCols; j++)
     		{
-    			System.out.println(j * textWidth + ". " + i * textHeight + ". " + textWidth + ". " + textHeight);
     			sprites[(i * textCols) + j] = 
     					bigImg.getSubimage(j * textWidth, i * textHeight, textWidth, textHeight);
     		}
@@ -133,6 +220,8 @@ class DrawPanel extends JPanel
 		}
 		linePaint = new TexturePaint(lineImg, new Rectangle(0,0,100,100));
 		defaultPaint = new TexturePaint(defaultImg, new Rectangle(0,0,100,100));
+		startTile = new TexturePaint(startImg, new Rectangle(0,0,TILE_SIZE,TILE_SIZE));
+		enemyTile = new TexturePaint(enemyImg, new Rectangle(0,0, TILE_SIZE, TILE_SIZE));
 		
 	}
 
@@ -198,17 +287,30 @@ class DrawPanel extends JPanel
     {
     	Tile t = tiles[row][col];
     	t.SetTileTexture(currentPaint);
+    	if (deleteMode)
+    		numOfTiles--;
     	if (t.GetTileNum() == -999)
     	{
     		numOfTiles++;
-    		System.out.println("New Tile");
     	}
     	t.SetTileNumber(tilePaintNum);
     }
     
     public void ChangeToStart(Point p)
     {
+    	if (startTilePoint != null) {
+    		Tile t = tiles[startTilePoint.x][startTilePoint.y];
+    		if (t.GetTileNum() == -1) {
+    			t.SetTileTexture(defaultPaint);
+    			t.SetTileNumber(-999);    		
+			}
+    	}
+    	
+    	startTilePoint = p;
+    	tiles[p.x][p.y].SetTileTexture(startTile);
     	tiles[p.x][p.y].SetTileNumber(-1);
+    	
+    	repaint();
     }
     
     public void ChangeToEnd(Point p)
@@ -218,12 +320,26 @@ class DrawPanel extends JPanel
     
     public void ChangeToEnemy(Point p) 
     {
+    	tiles[p.x][p.y].SetTileTexture(enemyTile);
     	tiles[p.x][p.y].SetTileNumber(-3);
+    	repaint();
+    	
     }
     
     public void SetTexture(int textureNum)
     {
-    	currentPaint = textureList[textureNum];
+    	if (textureNum == -1){
+    		currentPaint = startTile;
+    	}
+    	else if (textureNum == -3) {
+    		currentPaint = enemyTile;
+    	}
+    	else if (textureNum == -999) {
+    		currentPaint = defaultPaint;
+    	}
+    	else {
+    		currentPaint = textureList[textureNum];
+    	}
     	tilePaintNum = textureNum;
     }
     
@@ -281,6 +397,8 @@ class DrawPanel extends JPanel
         }
     }
     
+    
+    
     public void PrintTileNumbers(PrintWriter w)
     {
     	w.println(tileRow + ", " + tileCol + ", " + numOfTiles + ", " + fileName);
@@ -294,7 +412,6 @@ class DrawPanel extends JPanel
     				w.print(temp.GetTileNum() + "," + i + "," + j + "||");
     			}
     		}
-    		//w.println();
     	}
     }
     
@@ -308,6 +425,83 @@ class DrawPanel extends JPanel
     {
     	return sprites[index];
     }
+    
+	@Override
+	public void mouseClicked(MouseEvent evt) {
+		if (evt.getButton() == MouseEvent.BUTTON3) {
+			System.out.println("Testing Zoom");
+		}
+	}
 
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent evt) {
+		int mouseX = evt.getX();
+		int mouseY = evt.getY();
+		
+		lastTilePressed = CheckTiles(mouseX, mouseY, evt.getButton());
+		if(lastTilePressed.x != -1 && lastTilePressed.y != -1)
+		{
+			if(evt.getButton() == MouseEvent.BUTTON3)
+			{
+				System.out.println("got in the if statment");
+				tileMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+			}
+			repaint();
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent evt) {
+	}
+	
+	public void setDeleteMode(boolean bool) {
+		deleteMode = bool;
+		if (deleteMode) {
+			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+			savedPaint = currentPaint;
+			SetTexture(-999);
+		}
+		else {
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			currentPaint = savedPaint;
+		}
+		repaint();
+	}
+	
+	public boolean getDeleteMode() {
+		return deleteMode;
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent evt) {
+		int mouseX = evt.getX();
+		int mouseY = evt.getY();
+		
+    	int row = FindTileRow(mouseY);
+    	int col = FindTileCol(mouseX);
+    	
+    	Point p = new Point(row, col);
+		
+    	if (p != lastTilePressed) {
+			if (row != -1 && col != -1) {
+				lastTilePressed = p;
+				ChangeTile(row, col);
+				repaint();
+			}
+    	}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+	}
     
 }
