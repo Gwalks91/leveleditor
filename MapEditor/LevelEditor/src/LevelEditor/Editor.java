@@ -18,7 +18,6 @@ public class Editor
 	public static void main(String [] args)
 	{
 		InitializePanel ip = new InitializePanel();
-		TileButtons ex;
 		
 		if (!ip.IsRunning()) {
 			InitializePanel.State state = ip.GetMode();
@@ -52,7 +51,7 @@ public class Editor
 								System.out.println(s);
 							}
 							
-							ex = new TileButtons(22, Integer.parseInt(firstLine[1]),20, 
+							TileButtons ex = new TileButtons(Integer.parseInt(firstLine[0]), Integer.parseInt(firstLine[1]),20, 
 									loadPrompt.getTilesheet(),4,5,100,100, loadPrompt.getTextFile(), tilePlaces);
 							ex.setVisible(true);
 							
@@ -71,7 +70,7 @@ public class Editor
 				
 				if(!q.IsRunning())
 				{	
-					ex = new TileButtons(22, Integer.parseInt(q.GetAnswer(0)), 20,
+					TileButtons ex = new TileButtons(Integer.parseInt(q.GetAnswer(0)), Integer.parseInt(q.GetAnswer(1)), 20,
 						q.GetSpritesheetFile(), 4, 5, 100, 100, null, null);
 					ex.setVisible(true);
 				}

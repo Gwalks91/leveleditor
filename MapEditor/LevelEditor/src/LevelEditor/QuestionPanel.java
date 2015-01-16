@@ -5,16 +5,17 @@ package LevelEditor;
 //import javax.swing.Box;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 //import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-//import javax.swing.JTextField;
+import javax.swing.JTextField;
 
 public class QuestionPanel extends JPanel
 {
@@ -29,8 +30,10 @@ public class QuestionPanel extends JPanel
 	
 	private JFileChooser fcTilesheet;
 	private JFileChooser fcText;
+	private JComboBox box;
+	private TilesheetCombo tilesheetCombo;
 	
-	private File spritesheetFile;
+	private String spritesheetFile;
 	private final TextFileFilter pngFilter;
 	
 	public QuestionPanel()
@@ -42,22 +45,18 @@ public class QuestionPanel extends JPanel
 		
 		fcTilesheet.setFileFilter(pngFilter);
 		
-		questions = new Question[2];
+		questions = new Question[3];
+		tilesheetCombo = new TilesheetCombo();
+		box = tilesheetCombo.getComboBox();
 		
-		
-		choosePath = new JButton("Choose file");
+		box.addActionListener(new ActionListener() {
 
-		
-		choosePath.addActionListener(new ActionListener() 
-		{
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int returnVal = fcTilesheet.showOpenDialog(null);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					spritesheetFile = fcTilesheet.getSelectedFile();
-					questions[1].GetTextField().setText(spritesheetFile.getAbsolutePath());
-				}
+				questions[2].GetTextField().setText(tilesheetCombo.getSelectedName());
+				spritesheetFile = tilesheetCombo.getSelectedFile();
 			}
+			
 		});
 		
 		initUI();
@@ -67,13 +66,84 @@ public class QuestionPanel extends JPanel
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		SetUpQuestions();
+		
+		final JTextField rowField = questions[0].GetTextField();
+		final JTextField colField = questions[1].GetTextField();
+		
+		rowField.setText("22");
+		rowField.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String s = rowField.getText();
+				if (s.equals("")) {
+					rowField.setText("22");
+				}
+				try {
+					int height = Integer.parseInt(rowField.getText());
+					if (height < 22) {
+						rowField.setText("22");
+					}
+					else if (height > 50) {
+						rowField.setText("50");
+					}
+				}
+				catch (NumberFormatException e) {
+					rowField.setText("22");
+				}
+			}
+			
+		});
+		
+		colField.setText("22");
+		colField.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				String s = colField.getText();
+				if (s.equals("")) {
+					colField.setText("22");
+				}
+				try {
+					int width = Integer.parseInt(colField.getText());
+					if (width < 22) {
+						colField.setText("22");
+					}
+					else if (width > 50) {
+						colField.setText("50");
+					}
+				}
+				catch (NumberFormatException nfe) {
+					colField.setText("22");
+				}
+				
+			}
+			
+		});
+		
 		for(int i = 0; i < questions.length; i++)
 		{
 			add(questions[i].GetLabel());
 			add(questions[i].GetTextField());
 		}
-		add(choosePath);
 		
+		
+		spritesheetFile = tilesheetCombo.getSelectedFile();
+		questions[2].GetTextField().setText(spritesheetFile);
+		questions[2].GetTextField().setEditable(false);
+		add(box);
 		
 		
 		int result = JOptionPane.showConfirmDialog(null, this, 
@@ -86,16 +156,9 @@ public class QuestionPanel extends JPanel
 	
 	private void SetUpQuestions()
 	{
-		questions[0] = new Question("How many tile columns do you want?");
-		questions[1] = new Question("Where is your file for your textures?");
-		//questions[2] = new Question("Where do you want to save?")
-		/*questions[1] = new Question("How many tile columns do you want?");
-		questions[2] = new Question("How many different textures do you have?");
-		questions[3] = new Question("What is the file name for your textures?");
-		questions[4] = new Question("How many rows are in your texture sheet?");
-		questions[5] = new Question("How many columns are in your texture sheet?");
-		questions[6] = new Question("How wide are your textures?");
-		questions[7] = new Question("How tall are your textures?");*/
+		questions[0] = new Question("How many tile rows do you want?", true);
+		questions[1] = new Question("How many tile columns do you want?", true);
+		questions[2] = new Question("Where is your file for your textures?", false);
 	}
 	
 	public boolean IsRunning()
@@ -108,7 +171,7 @@ public class QuestionPanel extends JPanel
 		return questions[questionIndex].GetTextField().getText();
 	}
 	
-	public File GetSpritesheetFile() {
+	public String GetSpritesheetFile() {
 		return spritesheetFile;
 	}
 	

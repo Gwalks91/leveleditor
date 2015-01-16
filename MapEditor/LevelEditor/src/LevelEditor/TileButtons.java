@@ -39,7 +39,7 @@ import javax.swing.border.Border;
 
 
 
-public class TileButtons extends JFrame implements ActionListener, MouseListener
+public class TileButtons extends JFrame implements ActionListener
 {	
 	/**
 	 * 
@@ -64,12 +64,12 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 	private boolean isOdd;
 	private boolean hideButtons;
 	//private Point lastTilePressed;
-	private File spritesheetFile;
+	private String spritesheetFile;
 	private JButton currentButton;
 	private Border unselectedBorder;
 	private Border selectedBorder;
 	
-	public TileButtons(int numTileRows, int numTileCols, int numOfTextures, File textureFile,
+	public TileButtons(int numTileRows, int numTileCols, int numOfTextures, String textureFile,
 			int textSheetRows, int textSheetCols, int textWidth, int textHeight, File tilePlaces, String[] tiles)
 	{
 		hideButtons = false;
@@ -160,12 +160,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 				repaint();
 			}
 		});
-		mainPanel.addMouseListener(this);
 		
-//		mouseOffsetX = 10;
-//		mouseOffSetY = (int)(SCREEN_HEIGHT * 0.03) + 36;
-		
-		//tileMenu = new JPopupMenu();
     	
 		if (loadedLevelName == null)
 			setTitle("New Level");
@@ -238,73 +233,10 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 		{
 			if(objectButtons[i].getActionCommand().equals(evt.getActionCommand()))
 			{
-				//System.out.println("You pressed button: " + objectButtons[i].getText());
-//				DrawPanel test = (DrawPanel)scrollPanel.getViewport().getView();
-//				if (test.getDeleteMode())
-//					test.setDeleteMode(false);
-//				test.SetTexture(i);
-//				if (drwpnl.getDeleteMode())
-//					drwpnl.setDeleteMode(false);
 				drwpnl.SetTexture(i);
 				mainPanel.setFocusable(true);
-				//drwpnl.SetTexture(i);
 			}
 		}
-	}
-
-	
-	@Override
-	public void mouseClicked(MouseEvent evt) 
-	{
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) 
-	{
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) 
-	{
-		
-	}
-	
-	//Mouse has some weird shit that happens with it because the mouse is offset by 9 pixels 
-	//on the X and 36 pixels on the y
-	@Override
-	public void mousePressed(MouseEvent evt)
-	{
-//		mouseX = evt.getX() - mouseOffsetX;
-//		mouseY = evt.getY() - mouseOffSetY;
-//		
-//		DrawPanel panel = (DrawPanel) scrollPanel.getViewport().getView();
-//		lastTilePressed = panel.CheckTiles(mouseX,  mouseY, evt.getButton());
-//		System.out.println("yes");
-//		//JPanel panel = (JPanel)scrollPanel.getViewport().getView();
-//		if(lastTilePressed.x != -1 && lastTilePressed.y != -1)
-//		{
-//			if(evt.getButton() == MouseEvent.BUTTON3)
-//			{
-//				System.out.println("got in the if statment");
-//				tileMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-//				
-//			}
-//			repaint();
-//		}
-		
-		//System.out.println("Mouse Pressed at: " + mouseX + ", " + mouseY);
-	}
-	
-	@Override
-	public void mouseReleased(MouseEvent e) 
-	{
-		
-	}
-	
-	public void bacon() {
-		
 	}
 	
 	private void SetUpMenuButtons()
@@ -451,7 +383,7 @@ public class TileButtons extends JFrame implements ActionListener, MouseListener
 							}
 							menu = new MenuBar();
 							objectButtons = new JButton[bColNum * bRowNum];
-							File loadingTextureSheet = loadPrompt.getTilesheet();
+							String loadingTextureSheet = loadPrompt.getTilesheet();
 							drwpnl = new DrawPanel(
 									Integer.parseInt(firstLine[0]),
 									Integer.parseInt(firstLine[1]),

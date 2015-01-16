@@ -105,7 +105,7 @@ class DrawPanel extends JPanel implements MouseListener, MouseMotionListener
 	private TexturePaint savedPaint;
 
     public DrawPanel(int tileRow, int tileCol, int screenWidth, int screenHeight, 
-    		File file, int textureRows, int textureCols, int tWidth, int tHeight, String[] tilePlaces, int filledTiles) 
+    		String file, int textureRows, int textureCols, int tWidth, int tHeight, String[] tilePlaces, int filledTiles) 
     {	
     	deleteMode = false;
     	startTilePoint = null;
@@ -155,8 +155,8 @@ class DrawPanel extends JPanel implements MouseListener, MouseMotionListener
     	
         tiles = new Tile[tileRow][tileCol];
         
-        fileName = file.getName();
-        tilesheetFile = file;
+        fileName = file;
+        //tilesheetFile = file;
         
         setLayout(new FlowLayout());
         setPreferredSize(new Dimension(this.tileWidth * this.tileCol,this.tileHeight * this.tileRow));
@@ -164,7 +164,7 @@ class DrawPanel extends JPanel implements MouseListener, MouseMotionListener
         addMouseMotionListener(this);
         try 
         {
-        	bigImg = ImageIO.read(tilesheetFile);
+        	bigImg = ImageIO.read(this.getClass().getResource(fileName));
 			defaultImg = ImageIO.read(this.getClass().getResource("Images/exitButton.png"));
 			lineImg = ImageIO.read(this.getClass().getResource("Images/open.png"));
 			startImg = ImageIO.read(this.getClass().getResource("Images/startTile.png"));

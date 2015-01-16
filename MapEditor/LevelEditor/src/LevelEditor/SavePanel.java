@@ -14,7 +14,7 @@ public class SavePanel extends JPanel{
 	private boolean running = true;
 	
 	public SavePanel() {
-		saveFileNameQuestion = new Question("What do you want to name this file?");
+		saveFileNameQuestion = new Question("What do you want to name this file?", false);
 		
 		initUI();
 	}
