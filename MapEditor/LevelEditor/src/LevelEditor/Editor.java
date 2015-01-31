@@ -51,8 +51,8 @@ public class Editor
 								System.out.println(s);
 							}
 							
-							TileButtons ex = new TileButtons(Integer.parseInt(firstLine[0]), Integer.parseInt(firstLine[1]),20, 
-									loadPrompt.getTilesheet(),4,5,100,100, loadPrompt.getTextFile(), tilePlaces);
+							TileButtons ex = new TileButtons(Integer.parseInt(firstLine[0]), Integer.parseInt(firstLine[1]),21, 
+									loadPrompt.getTilesheet(),5,5,100,100, loadPrompt.getTextFile(), tilePlaces);
 							ex.setVisible(true);
 							
 							br.close();
@@ -70,8 +70,8 @@ public class Editor
 				
 				if(!q.IsRunning())
 				{	
-					TileButtons ex = new TileButtons(Integer.parseInt(q.GetAnswer(0)), Integer.parseInt(q.GetAnswer(1)), 20,
-						q.GetSpritesheetFile(), 4, 5, 100, 100, null, null);
+					TileButtons ex = new TileButtons(Integer.parseInt(q.GetAnswer(0)), Integer.parseInt(q.GetAnswer(1)), 21,
+						q.GetSpritesheetFile(), 5, 5, 100, 100, null, null);
 					ex.setVisible(true);
 				}
 			}
